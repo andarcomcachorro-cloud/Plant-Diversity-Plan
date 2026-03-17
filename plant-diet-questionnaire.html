@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plant-Powered Journey Questionnaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --soil: #2C1A0E;
+    --bark: #4A2E1A;
+    --moss: #3D5A3E;
+    --fern: #5C7C3A;
+    --sage: #8FAF72;
+    --mint: #B8D4A0;
+    --cream: #F5F0E8;
+    --parchment: #EDE4D0;
+    --gold: #C8953A;
+    --blush: #E8C4A0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--soil);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(93,124,58,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(200,149,58,0.07) 0%, transparent 50%);
+  }
+
+  /* Background leaf decorations */
+  .bg-leaf {
+    position: fixed;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-leaf-1 { top: -60px; left: -40px; font-size: 280px; transform: rotate(-20deg); }
+  .bg-leaf-2 { bottom: -80px; right: -40px; font-size: 320px; transform: rotate(30deg); }
+  .bg-leaf-3 { top: 40%; left: -80px; font-size: 180px; transform: rotate(15deg); }
+
+  .wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeSlideDown 0.8s ease both;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: var(--fern);
+    color: var(--cream);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 40px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--soil);
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+
+  h1 em {
+    color: var(--fern);
+    font-style: italic;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--bark);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px auto;
+    max-width: 260px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--sage); opacity: 0.5; }
+  .divider-icon { font-size: 18px; }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 36px;
+    animation: fadeSlideDown 0.8s 0.2s ease both;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--bark);
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--parchment);
+    border-radius: 99px;
+    border: 1px solid rgba(93,124,58,0.2);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), var(--fern));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  /* Section Cards */
+  .section-card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(93,124,58,0.15);
+    box-shadow: 0 2px 20px rgba(44,26,14,0.06);
+    display: none;
+    animation: fadeSlideUp 0.5s ease both;
+  }
+  .section-card.active { display: block; }
+
+  .section-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--soil);
+    margin-bottom: 6px;
+  }
+
+  .section-desc {
+    font-size: 13.5px;
+    color: var(--bark);
+    font-weight: 300;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* Questions */
+  .question {
+    margin-bottom: 28px;
+  }
+
+  .question-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--soil);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .question-label span.q-icon {
+    margin-right: 8px;
+  }
+
+  /* Chip selects */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .chip {
+    padding: 9px 18px;
+    border-radius: 40px;
+    border: 1.5px solid var(--mint);
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--bark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--sage); color: var(--moss); background: rgba(184,212,160,0.15); }
+  .chip.selected {
+    background: var(--fern);
+    border-color: var(--fern);
+    color: white;
+    box-shadow: 0 2px 10px rgba(93,124,58,0.3);
+  }
+
+  /* Scale rating */
+  .scale {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .scale-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1.5px solid var(--mint);
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--bark);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .scale-btn:hover { border-color: var(--sage); color: var(--moss); }
+  .scale-btn.selected {
+    background: var(--fern);
+    border-color: var(--fern);
+    color: white;
+    box-shadow: 0 2px 10px rgba(93,124,58,0.3);
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--sage);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  /* Textarea */
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--mint);
+    border-radius: 12px;
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--soil);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: var(--fern); }
+  textarea::placeholder { color: var(--blush); }
+
+  /* Select dropdown */
+  select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--mint);
+    border-radius: 12px;
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--soil);
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C7C3A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+  }
+  select:focus { border-color: var(--fern); }
+
+  /* Nav Buttons */
+  .nav {
+    display: flex;
+    gap: 14px;
+    margin-top: 36px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-back {
+    padding: 12px 24px;
+    border: 1.5px solid var(--mint);
+    background: transparent;
+    color: var(--bark);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--sage); color: var(--moss); }
+
+  .btn-next {
+    padding: 14px 32px;
+    background: var(--fern);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(93,124,58,0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .btn-next:hover { background: var(--moss); box-shadow: 0 6px 20px rgba(93,124,58,0.4); transform: translateY(-1px); }
+
+  /* Results */
+  #results {
+    display: none;
+    animation: fadeSlideUp 0.6s ease both;
+  }
+
+  .result-header {
+    text-align: center;
+    background: var(--fern);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 40px 36px 32px;
+  }
+
+  .result-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+
+  .result-header p {
+    font-size: 14px;
+    opacity: 0.85;
+    font-weight: 300;
+  }
+
+  .result-body {
+    background: white;
+    border-radius: 0 0 20px 20px;
+    border: 1px solid rgba(93,124,58,0.15);
+    border-top: none;
+    padding: 36px;
+  }
+
+  .result-section {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--parchment);
+  }
+  .result-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .result-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--soil);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .result-tag {
+    background: var(--cream);
+    border: 1px solid var(--mint);
+    color: var(--moss);
+    border-radius: 40px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .result-text {
+    font-size: 14px;
+    color: var(--bark);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .result-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--sage), var(--fern));
+    color: white;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .btn-print {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: var(--soil);
+    color: var(--cream);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-print:hover { background: var(--bark); }
+
+  .btn-restart {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    color: var(--fern);
+    border: 1.5px solid var(--fern);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { background: rgba(93,124,58,0.05); }
+
+  /* Animations */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .wrapper { padding: 32px 16px 60px; }
+    .section-card { padding: 24px; }
+    .scale-btn { width: 40px; height: 40px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-leaf bg-leaf-1">🌿</div>
+<div class="bg-leaf bg-leaf-2">🍃</div>
+<div class="bg-leaf bg-leaf-3">🌱</div>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">🌱 Plant-Powered Meals</div>
+    <h1>Your Path to a <em>Diverse</em><br>Plant-Based Diet</h1>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-icon">✦</div>
+      <div class="divider-line"></div>
+    </div>
+    <p class="subtitle">Answer a few questions so we can understand your starting point and help you build a colorful, nourishing plant-powered life.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="progress-text">Section 1 of 5</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Current Eating Habits -->
+  <div class="section-card active" id="section-1">
+    <div class="section-number">Section 01 / 05</div>
+    <div class="section-title">🥗 Current Eating Habits</div>
+    <div class="section-desc">Let's understand where you're starting from — no judgment, just curiosity!</div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🍽️</span> How would you describe your current diet?</label>
+      <div class="chips" data-key="current_diet" data-multi="false">
+        <div class="chip" data-val="omnivore">Omnivore (eat everything)</div>
+        <div class="chip" data-val="flexitarian">Flexitarian</div>
+        <div class="chip" data-val="vegetarian">Vegetarian</div>
+        <div class="chip" data-val="vegan">Mostly Vegan</div>
+        <div class="chip" data-val="other">Other</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🥦</span> How many different vegetables do you eat in a typical week?</label>
+      <div class="chips" data-key="veg_variety" data-multi="false">
+        <div class="chip" data-val="1-3">1–3 types</div>
+        <div class="chip" data-val="4-7">4–7 types</div>
+        <div class="chip" data-val="8-12">8–12 types</div>
+        <div class="chip" data-val="12+">12+ types</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🌾</span> Which plant foods do you already eat regularly? (select all that apply)</label>
+      <div class="chips" data-key="current_plants" data-multi="true">
+        <div class="chip" data-val="beans">Beans & Lentils</div>
+        <div class="chip" data-val="tofu">Tofu / Tempeh</div>
+        <div class="chip" data-val="whole_grains">Whole Grains</div>
+        <div class="chip" data-val="nuts_seeds">Nuts & Seeds</div>
+        <div class="chip" data-val="leafy_greens">Leafy Greens</div>
+        <div class="chip" data-val="fruits">Fruits</div>
+        <div class="chip" data-val="root_veg">Root Vegetables</div>
+        <div class="chip" data-val="none">Not many yet</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-next" onclick="nextSection(1)">Next <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Goals & Motivation -->
+  <div class="section-card" id="section-2">
+    <div class="section-number">Section 02 / 05</div>
+    <div class="section-title">🎯 Goals & Motivation</div>
+    <div class="section-desc">Understanding your "why" helps us tailor the journey to what matters most to you.</div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">💚</span> What's driving your interest in a more plant-diverse diet? (select all that apply)</label>
+      <div class="chips" data-key="motivation" data-multi="true">
+        <div class="chip" data-val="health">Better overall health</div>
+        <div class="chip" data-val="energy">More energy</div>
+        <div class="chip" data-val="weight">Weight management</div>
+        <div class="chip" data-val="gut">Gut health / digestion</div>
+        <div class="chip" data-val="environment">Environmental reasons</div>
+        <div class="chip" data-val="explore">Exploring new foods</div>
+        <div class="chip" data-val="protein">Better protein sources</div>
+        <div class="chip" data-val="longevity">Longevity & prevention</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">⏱️</span> How quickly are you hoping to shift your diet?</label>
+      <div class="chips" data-key="pace" data-multi="false">
+        <div class="chip" data-val="gradual">Slowly and gradually</div>
+        <div class="chip" data-val="moderate">Moderate pace (few weeks)</div>
+        <div class="chip" data-val="fast">Dive in quickly</div>
+        <div class="chip" data-val="unsure">Not sure yet</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">📈</span> How motivated do you feel right now? (1 = just curious, 10 = fully committed)</label>
+      <div class="scale" data-key="motivation_level" data-multi="false">
+        <button class="scale-btn" data-val="1">1</button>
+        <button class="scale-btn" data-val="2">2</button>
+        <button class="scale-btn" data-val="3">3</button>
+        <button class="scale-btn" data-val="4">4</button>
+        <button class="scale-btn" data-val="5">5</button>
+        <button class="scale-btn" data-val="6">6</button>
+        <button class="scale-btn" data-val="7">7</button>
+        <button class="scale-btn" data-val="8">8</button>
+        <button class="scale-btn" data-val="9">9</button>
+        <button class="scale-btn" data-val="10">10</button>
+      </div>
+      <div class="scale-labels"><span>Just curious</span><span>Fully committed</span></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevSection(2)">← Back</button>
+      <button class="btn-next" onclick="nextSection(2)">Next <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Barriers & Challenges -->
+  <div class="section-card" id="section-3">
+    <div class="section-number">Section 03 / 05</div>
+    <div class="section-title">🌧️ Barriers & Challenges</div>
+    <div class="section-desc">Let's get honest about what might get in the way — so we can plan around it.</div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🚧</span> What challenges do you anticipate? (select all that apply)</label>
+      <div class="chips" data-key="barriers" data-multi="true">
+        <div class="chip" data-val="time">Not enough time to cook</div>
+        <div class="chip" data-val="cost">Budget / cost concerns</div>
+        <div class="chip" data-val="taste">Worried I won't like it</div>
+        <div class="chip" data-val="family">Family / partner doesn't eat plants</div>
+        <div class="chip" data-val="knowledge">Don't know how to cook plants</div>
+        <div class="chip" data-val="protein_worry">Worried about getting enough protein</div>
+        <div class="chip" data-val="access">Limited access to fresh produce</div>
+        <div class="chip" data-val="social">Social situations & eating out</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🍳</span> How confident are you in the kitchen?</label>
+      <div class="chips" data-key="cooking_skill" data-multi="false">
+        <div class="chip" data-val="beginner">Beginner — I keep it simple</div>
+        <div class="chip" data-val="intermediate">Intermediate — I follow recipes</div>
+        <div class="chip" data-val="confident">Confident — I improvise often</div>
+        <div class="chip" data-val="love_cooking">I love cooking and experimenting</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🛒</span> How much time per week can you realistically dedicate to meal prep?</label>
+      <div class="chips" data-key="time_available" data-multi="false">
+        <div class="chip" data-val="under_1hr">Under 1 hour</div>
+        <div class="chip" data-val="1-2hrs">1–2 hours</div>
+        <div class="chip" data-val="3-4hrs">3–4 hours</div>
+        <div class="chip" data-val="5+hrs">5+ hours</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevSection(3)">← Back</button>
+      <button class="btn-next" onclick="nextSection(3)">Next <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Food Preferences -->
+  <div class="section-card" id="section-4">
+    <div class="section-number">Section 04 / 05</div>
+    <div class="section-title">🌶️ Tastes & Preferences</div>
+    <div class="section-desc">The more we know about what you love, the more exciting we can make your meals.</div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🌍</span> Which cuisines do you enjoy or are curious about? (select all that apply)</label>
+      <div class="chips" data-key="cuisines" data-multi="true">
+        <div class="chip" data-val="mediterranean">Mediterranean</div>
+        <div class="chip" data-val="asian">Asian (Indian, Thai, Japanese)</div>
+        <div class="chip" data-val="mexican">Mexican / Latin American</div>
+        <div class="chip" data-val="middle_eastern">Middle Eastern</div>
+        <div class="chip" data-val="african">African</div>
+        <div class="chip" data-val="american">American comfort food</div>
+        <div class="chip" data-val="european">European</div>
+        <div class="chip" data-val="all">Open to everything!</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🌶️</span> What flavor profiles do you gravitate toward?</label>
+      <div class="chips" data-key="flavors" data-multi="true">
+        <div class="chip" data-val="savory">Savory & Umami</div>
+        <div class="chip" data-val="spicy">Bold & Spicy</div>
+        <div class="chip" data-val="sweet">Sweet & Fruity</div>
+        <div class="chip" data-val="earthy">Earthy & Herby</div>
+        <div class="chip" data-val="tangy">Tangy & Bright</div>
+        <div class="chip" data-val="creamy">Rich & Creamy</div>
+        <div class="chip" data-val="fresh">Light & Fresh</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🚫</span> Any foods you dislike or need to avoid?</label>
+      <textarea data-key="dislikes" placeholder="e.g. I hate mushrooms, I'm allergic to soy, I can't stand bitter greens..."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevSection(4)">← Back</button>
+      <button class="btn-next" onclick="nextSection(4)">Next <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Support & Vision -->
+  <div class="section-card" id="section-5">
+    <div class="section-number">Section 05 / 05</div>
+    <div class="section-title">🌟 Your Vision</div>
+    <div class="section-desc">Last section! Let's think big-picture about what success looks like for you.</div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🤝</span> What kind of support would help you most?</label>
+      <div class="chips" data-key="support" data-multi="true">
+        <div class="chip" data-val="meal_plans">Weekly meal plans</div>
+        <div class="chip" data-val="recipes">Easy recipes</div>
+        <div class="chip" data-val="shopping">Shopping lists</div>
+        <div class="chip" data-val="accountability">Accountability check-ins</div>
+        <div class="chip" data-val="education">Learning about nutrition</div>
+        <div class="chip" data-val="swaps">Simple food swaps</div>
+        <div class="chip" data-val="batch_cooking">Batch cooking tips</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">🎨</span> What does success look like for you in 3 months?</label>
+      <textarea data-key="success_vision" placeholder="Describe your ideal relationship with plant-based eating in a few months..."></textarea>
+    </div>
+
+    <div class="question">
+      <label class="question-label"><span class="q-icon">💬</span> Anything else you'd like your dietitian to know?</label>
+      <textarea data-key="extra_notes" placeholder="Anything goes! Health conditions, lifestyle notes, questions you have..."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn-back" onclick="prevSection(5)">← Back</button>
+      <button class="btn-next" onclick="submitForm()">See My Profile 🌿</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="result-header">
+      <div style="font-size:48px;margin-bottom:12px;">🌿</div>
+      <h2>Your Plant-Powered Profile</h2>
+      <p>Here's a summary of your journey starting point</p>
+    </div>
+    <div class="result-body" id="result-body">
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const answers = {};
+  const totalSections = 5;
+
+  function updateProgress(section) {
+    const pct = Math.round(((section - 1) / totalSections) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-text').textContent = `Section ${section} of ${totalSections}`;
+  }
+
+  // Chip clicks
+  document.querySelectorAll('.chips').forEach(group => {
+    const isMulti = group.dataset.multi === 'true';
+    group.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (!isMulti) group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.toggle('selected');
+        collectChipAnswer(group);
+      });
+    });
+  });
+
+  // Scale clicks
+  document.querySelectorAll('.scale').forEach(group => {
+    group.querySelectorAll('.scale-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[group.dataset.key] = btn.dataset.val;
+      });
+    });
+  });
+
+  // Textarea
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', () => { answers[ta.dataset.key] = ta.value; });
+  });
+
+  // Select
+  document.querySelectorAll('select').forEach(sel => {
+    sel.addEventListener('change', () => { answers[sel.dataset.key] = sel.value; });
+  });
+
+  function collectChipAnswer(group) {
+    const selected = [...group.querySelectorAll('.chip.selected')].map(c => c.dataset.val);
+    answers[group.dataset.key] = group.dataset.multi === 'true' ? selected : selected[0];
+  }
+
+  function nextSection(current) {
+    document.getElementById('section-' + current).classList.remove('active');
+    const next = current + 1;
+    document.getElementById('section-' + next).classList.add('active');
+    updateProgress(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevSection(current) {
+    document.getElementById('section-' + current).classList.remove('active');
+    const prev = current - 1;
+    document.getElementById('section-' + prev).classList.add('active');
+    updateProgress(prev);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitForm() {
+    document.getElementById('section-5').classList.remove('active');
+    document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('progress-pct').textContent = '100%';
+    document.getElementById('progress-text').textContent = 'Complete!';
+    buildResults();
+    document.getElementById('results').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildResults() {
+    const rb = document.getElementById('result-body');
+
+    const labels = {
+      current_diet: { omnivore:'Omnivore', flexitarian:'Flexitarian', vegetarian:'Vegetarian', vegan:'Mostly Vegan', other:'Other' },
+      veg_variety: { '1-3':'1–3 types/week', '4-7':'4–7 types/week', '8-12':'8–12 types/week', '12+':'12+ types/week' },
+      pace: { gradual:'Gradual transition', moderate:'Moderate pace', fast:'Dive in quickly', unsure:'Not sure yet' },
+      cooking_skill: { beginner:'Beginner cook', intermediate:'Intermediate cook', confident:'Confident cook', love_cooking:'Loves to cook' },
+      time_available: { 'under_1hr':'Under 1 hr/week', '1-2hrs':'1–2 hrs/week', '3-4hrs':'3–4 hrs/week', '5+hrs':'5+ hrs/week' },
+    };
+
+    const motivLevel = answers['motivation_level'] || '?';
+
+    const makeTagsHtml = (vals, map) => {
+      if (!vals) return '<span class="result-tag">Not answered</span>';
+      const arr = Array.isArray(vals) ? vals : [vals];
+      return arr.map(v => `<span class="result-tag">${map ? (map[v] || v) : v}</span>`).join('');
+    };
+
+    rb.innerHTML = `
+      <div class="result-section">
+        <h3>🌱 Starting Point</h3>
+        <div class="result-tags">
+          ${makeTagsHtml(answers['current_diet'], labels.current_diet)}
+          ${makeTagsHtml(answers['veg_variety'], labels.veg_variety)}
+        </div>
+        ${answers['current_plants'] ? `<div style="margin-top:10px;" class="result-tags">${makeTagsHtml(answers['current_plants'], null)}</div>` : ''}
+      </div>
+
+      <div class="result-section">
+        <h3>🎯 Motivation & Pace</h3>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span class="result-score">⚡ Motivation: ${motivLevel}/10</span>
+          <div class="result-tags">${makeTagsHtml(answers['pace'], labels.pace)}</div>
+        </div>
+        ${answers['motivation'] ? `<div style="margin-top:12px;" class="result-tags">${makeTagsHtml(answers['motivation'], null)}</div>` : ''}
+      </div>
+
+      <div class="result-section">
+        <h3>🚧 Challenges to Address</h3>
+        <div class="result-tags">
+          ${makeTagsHtml(answers['barriers'], null)}
+          ${makeTagsHtml(answers['cooking_skill'], labels.cooking_skill)}
+          ${makeTagsHtml(answers['time_available'], labels.time_available)}
+        </div>
+      </div>
+
+      <div class="result-section">
+        <h3>🌍 Food Loves</h3>
+        <div class="result-tags">
+          ${makeTagsHtml(answers['cuisines'], null)}
+        </div>
+        ${answers['flavors'] ? `<div style="margin-top:10px;" class="result-tags">${makeTagsHtml(answers['flavors'], null)}</div>` : ''}
+        ${answers['dislikes'] ? `<p class="result-text" style="margin-top:12px;"><strong>Avoid:</strong> ${answers['dislikes']}</p>` : ''}
+      </div>
+
+      <div class="result-section">
+        <h3>🤝 Support Needed</h3>
+        <div class="result-tags">${makeTagsHtml(answers['support'], null)}</div>
+      </div>
+
+      ${answers['success_vision'] ? `
+      <div class="result-section">
+        <h3>🌟 Your 3-Month Vision</h3>
+        <p class="result-text">"${answers['success_vision']}"</p>
+      </div>` : ''}
+
+      ${answers['extra_notes'] ? `
+      <div class="result-section">
+        <h3>💬 Additional Notes</h3>
+        <p class="result-text">${answers['extra_notes']}</p>
+      </div>` : ''}
+
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="btn-restart" onclick="location.reload()">↩ Start Over</button>
+    `;
+  }
+</script>
+</body>
+</html>
