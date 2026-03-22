@@ -467,6 +467,85 @@ body {
 .meal-card:nth-child(6) { animation-delay: 0.3s; }
 .meal-card:nth-child(7) { animation-delay: 0.35s; }
 
+/* ---- MOBILE / IPHONE ---- */
+@media (max-width: 600px) {
+  .hero { padding: 36px 16px 32px; }
+  .hero h1 { font-size: 2rem; }
+  .hero-sub { font-size: 12px; }
+  .hero-pill { font-size: 11px; padding: 5px 10px; }
+
+  .container { padding: 24px 14px 60px; }
+
+  /* Bigger touch targets for approve/swap buttons */
+  .btn-approve, .btn-swap {
+    padding: 12px 18px;
+    font-size: 14px;
+    min-height: 44px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Prevent iPhone zoom on textarea focus - must be 16px+ */
+  .swap-note textarea,
+  .feedback-section textarea {
+    font-size: 16px !important;
+  }
+
+  /* Collapse day sidebar on mobile - show as top label instead */
+  .card-day {
+    writing-mode: horizontal-tb;
+    transform: none;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 16px;
+    font-size: 11px;
+    width: 100%;
+    background: var(--pale);
+  }
+  .card-top { flex-direction: column; }
+  .card-body { padding: 16px; }
+
+  /* Single column ingredients on mobile */
+  .ingredients-list ul { grid-template-columns: 1fr; }
+
+  /* Stack progress bar vertically */
+  .approval-progress {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 18px;
+  }
+  .prog-bar-bg { width: 100%; }
+
+  /* Bigger submit button */
+  .btn-submit {
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    font-size: 16px;
+    min-height: 52px;
+  }
+
+  /* Bigger print button */
+  .btn-print {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  /* Section header sizing */
+  .section-title { font-size: 1.5rem; }
+  .section-icon { width: 40px; height: 40px; font-size: 18px; }
+
+  /* Nutrition pills wrap nicely */
+  .nutrition-strip { gap: 5px; }
+  .nutr-pill { font-size: 10.5px; padding: 4px 9px; }
+
+  /* Hero stats wrap */
+  .hero-stats { gap: 6px; }
+}
+
 /* ---- PRINT STYLES ---- */
 @media print {
   .hero { background: var(--forest) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1038,13 +1117,21 @@ function submitFeedback() {
     doc.text(`Page ${p} of ${totalPages}`, W - margin, doc.internal.pageSize.getHeight() - 20, { align: 'right' });
   }
 
-  // Open PDF in new tab so she can click the mailto button
+  // Safari/iPhone compatible PDF download - window.open blobs are blocked on iOS
   const pdfBlob = doc.output('blob');
   const pdfUrl = URL.createObjectURL(pdfBlob);
-  window.open(pdfUrl, '_blank');
 
-  // Also trigger download as backup
-  doc.save('meal-feedback-march23.pdf');
+  // Create a temporary download link - works on all browsers including Safari iOS
+  const dlLink = document.createElement('a');
+  dlLink.href = pdfUrl;
+  dlLink.download = 'meal-feedback-march23.pdf';
+  dlLink.style.display = 'none';
+  document.body.appendChild(dlLink);
+  dlLink.click();
+  setTimeout(() => {
+    document.body.removeChild(dlLink);
+    URL.revokeObjectURL(pdfUrl);
+  }, 1000);
 
   document.getElementById('feedback-section').style.display = 'none';
   document.getElementById('success-msg').style.display = 'block';
