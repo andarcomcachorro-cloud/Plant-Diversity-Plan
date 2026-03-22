@@ -1,892 +1,1059 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plant-Powered Journey Questionnaire</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<title>Your Weekly Plant-Powered Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root {
-    --soil: #2C1A0E;
-    --bark: #4A2E1A;
-    --moss: #3D5A3E;
-    --fern: #5C7C3A;
-    --sage: #8FAF72;
-    --mint: #B8D4A0;
-    --cream: #F5F0E8;
-    --parchment: #EDE4D0;
-    --gold: #C8953A;
-    --blush: #E8C4A0;
-  }
+:root {
+  --forest: #1E3A1A;
+  --fern: #2D5A1B;
+  --moss: #4A7C2F;
+  --sage: #7AAD5A;
+  --mint: #B8D9A0;
+  --pale: #EEF7E8;
+  --cream: #FAF7F2;
+  --parchment: #F2EDE3;
+  --gold: #C8953A;
+  --gold-light: #FDF3E3;
+  --rust: #C0572A;
+  --dark: #1A1A1A;
+  --mid: #444;
+  --soft: #777;
+  --line: #DDE8D5;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background-color: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--soil);
-    min-height: 100vh;
-    overflow-x: hidden;
-    background-image:
-      radial-gradient(ellipse at 10% 20%, rgba(93,124,58,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 80%, rgba(200,149,58,0.07) 0%, transparent 50%);
-  }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  min-height: 100vh;
+}
 
-  /* Background leaf decorations */
-  .bg-leaf {
-    position: fixed;
-    opacity: 0.06;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .bg-leaf-1 { top: -60px; left: -40px; font-size: 280px; transform: rotate(-20deg); }
-  .bg-leaf-2 { bottom: -80px; right: -40px; font-size: 320px; transform: rotate(30deg); }
-  .bg-leaf-3 { top: 40%; left: -80px; font-size: 180px; transform: rotate(15deg); }
+/* ---- HERO ---- */
+.hero {
+  background: var(--forest);
+  padding: 52px 24px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(74,124,47,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(200,149,58,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  border: 1px solid rgba(184,217,160,0.4);
+  color: var(--mint);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 40px;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.hero h1 em { color: var(--sage); font-style: italic; }
+.hero-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 300;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hero-pill {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.75);
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 11.5px;
+  font-weight: 400;
+}
 
-  .wrapper {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-    position: relative;
-    z-index: 1;
-  }
+/* ---- LAYOUT ---- */
+.container { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 52px;
-    animation: fadeSlideDown 0.8s ease both;
-  }
+/* ---- INSTRUCTIONS ---- */
+.instructions {
+  background: var(--gold-light);
+  border: 1px solid rgba(200,149,58,0.25);
+  border-left: 4px solid var(--gold);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 36px;
+  font-size: 13.5px;
+  color: var(--mid);
+  line-height: 1.65;
+}
+.instructions strong { color: var(--forest); }
 
-  .header-badge {
-    display: inline-block;
-    background: var(--fern);
-    color: var(--cream);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    padding: 6px 18px;
-    border-radius: 40px;
-    margin-bottom: 20px;
-  }
+/* ---- SECTION HEADER ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  margin-top: 44px;
+}
+.section-icon {
+  width: 48px; height: 48px;
+  background: var(--fern);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(45,90,27,0.25);
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--forest);
+  line-height: 1;
+}
+.section-count {
+  font-size: 12px;
+  color: var(--soft);
+  font-weight: 300;
+  margin-top: 3px;
+}
 
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    color: var(--soil);
-    line-height: 1.2;
-    margin-bottom: 14px;
-  }
+/* ---- MEAL CARD ---- */
+.meals-grid { display: flex; flex-direction: column; gap: 16px; }
 
-  h1 em {
-    color: var(--fern);
-    font-style: italic;
-  }
+.meal-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+}
+.meal-card:hover { box-shadow: 0 6px 24px rgba(30,58,26,0.08); transform: translateY(-1px); }
+.meal-card.approved { border-color: var(--moss); background: #FAFFF8; }
+.meal-card.swap-requested { border-color: var(--rust); background: #FFF8F6; }
 
-  .subtitle {
-    font-size: 15px;
-    color: var(--bark);
-    max-width: 480px;
-    margin: 0 auto;
-    line-height: 1.7;
-    font-weight: 300;
-  }
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
 
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 28px auto;
-    max-width: 260px;
-  }
-  .divider-line { flex: 1; height: 1px; background: var(--sage); opacity: 0.5; }
-  .divider-icon { font-size: 18px; }
+.card-day {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  background: var(--pale);
+  color: var(--moss);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 10px;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--line);
+  flex-shrink: 0;
+}
 
-  /* Progress */
-  .progress-wrap {
-    margin-bottom: 36px;
-    animation: fadeSlideDown 0.8s 0.2s ease both;
-  }
-  .progress-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--bark);
-    margin-bottom: 8px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .progress-bar-bg {
-    height: 6px;
-    background: var(--parchment);
-    border-radius: 99px;
-    border: 1px solid rgba(93,124,58,0.2);
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--sage), var(--fern));
-    border-radius: 99px;
-    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
-    width: 0%;
-  }
+.card-body { flex: 1; padding: 20px 22px; }
 
-  /* Section Cards */
-  .section-card {
-    background: white;
-    border-radius: 20px;
-    padding: 36px;
-    margin-bottom: 24px;
-    border: 1px solid rgba(93,124,58,0.15);
-    box-shadow: 0 2px 20px rgba(44,26,14,0.06);
-    display: none;
-    animation: fadeSlideUp 0.5s ease both;
-  }
-  .section-card.active { display: block; }
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
 
-  .section-number {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--sage);
-    margin-bottom: 6px;
-  }
+.card-desc {
+  font-size: 13.5px;
+  color: var(--mid);
+  line-height: 1.65;
+  margin-bottom: 14px;
+  font-weight: 300;
+}
 
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--soil);
-    margin-bottom: 6px;
-  }
+/* ---- INGREDIENTS ---- */
+.ingredients-toggle {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--moss);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ingredients-toggle:hover { background: var(--pale); border-color: var(--sage); }
+.toggle-arrow { transition: transform 0.2s; }
+.ingredients-toggle.open .toggle-arrow { transform: rotate(180deg); }
 
-  .section-desc {
-    font-size: 13.5px;
-    color: var(--bark);
-    font-weight: 300;
-    margin-bottom: 28px;
-    line-height: 1.6;
-  }
+.ingredients-list {
+  display: none;
+  background: var(--parchment);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.ingredients-list.visible { display: block; }
+.ingredients-list ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 20px;
+}
+.ingredients-list li {
+  font-size: 12.5px;
+  color: var(--mid);
+  font-weight: 300;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+.ingredients-list li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  color: var(--sage);
+  font-size: 8px;
+  top: 4px;
+}
+.ingredients-list strong { color: var(--forest); font-weight: 600; }
 
-  /* Questions */
-  .question {
-    margin-bottom: 28px;
-  }
+@media (max-width: 480px) {
+  .ingredients-list ul { grid-template-columns: 1fr; }
+}
 
-  .question-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--soil);
-    margin-bottom: 12px;
-    line-height: 1.5;
-  }
+/* ---- NUTRITION STRIP ---- */
+.nutrition-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.nutr-pill {
+  background: var(--pale);
+  border: 1px solid var(--line);
+  border-radius: 40px;
+  padding: 4px 11px;
+  font-size: 11px;
+  color: var(--moss);
+  font-weight: 500;
+}
+.nutr-pill.cal { background: var(--gold-light); color: var(--gold); border-color: rgba(200,149,58,0.2); }
+.nutr-pill.plants { background: #E8F4FF; color: #2D6A9F; border-color: #BDD9F0; }
 
-  .question-label span.q-icon {
-    margin-right: 8px;
-  }
+/* ---- APPROVAL ROW ---- */
+.approval-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
 
-  /* Chip selects */
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+.approval-row span {
+  font-size: 12px;
+  color: var(--soft);
+  font-weight: 500;
+  margin-right: 4px;
+}
 
-  .chip {
-    padding: 9px 18px;
-    border-radius: 40px;
-    border: 1.5px solid var(--mint);
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13.5px;
-    color: var(--bark);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-  }
-  .chip:hover { border-color: var(--sage); color: var(--moss); background: rgba(184,212,160,0.15); }
-  .chip.selected {
-    background: var(--fern);
-    border-color: var(--fern);
-    color: white;
-    box-shadow: 0 2px 10px rgba(93,124,58,0.3);
-  }
+.btn-approve, .btn-swap {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: 40px;
+  border: 1.5px solid;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-approve {
+  border-color: var(--moss);
+  color: var(--moss);
+  background: transparent;
+}
+.btn-approve:hover, .btn-approve.active {
+  background: var(--moss);
+  color: white;
+  box-shadow: 0 3px 10px rgba(74,124,47,0.25);
+}
+.btn-swap {
+  border-color: var(--rust);
+  color: var(--rust);
+  background: transparent;
+}
+.btn-swap:hover, .btn-swap.active {
+  background: var(--rust);
+  color: white;
+  box-shadow: 0 3px 10px rgba(192,87,42,0.2);
+}
 
-  /* Scale rating */
-  .scale {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+.swap-note {
+  display: none;
+  width: 100%;
+  margin-top: 10px;
+}
+.swap-note textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid rgba(192,87,42,0.3);
+  border-radius: 10px;
+  background: #FFF8F6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--dark);
+  resize: none;
+  min-height: 70px;
+  outline: none;
+}
+.swap-note textarea:focus { border-color: var(--rust); }
+.swap-note textarea::placeholder { color: #CCC; }
 
-  .scale-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    border: 1.5px solid var(--mint);
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--bark);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .scale-btn:hover { border-color: var(--sage); color: var(--moss); }
-  .scale-btn.selected {
-    background: var(--fern);
-    border-color: var(--fern);
-    color: white;
-    box-shadow: 0 2px 10px rgba(93,124,58,0.3);
-  }
-  .scale-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--sage);
-    font-weight: 300;
-    letter-spacing: 0.3px;
-  }
+/* ---- PROGRESS BAR ---- */
+.approval-progress {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin: 36px 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.prog-label { font-size: 13px; color: var(--mid); font-weight: 500; white-space: nowrap; }
+.prog-bar-bg { flex: 1; height: 8px; background: var(--parchment); border-radius: 40px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: linear-gradient(90deg, var(--sage), var(--fern)); border-radius: 40px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.prog-count { font-size: 13px; font-weight: 600; color: var(--fern); white-space: nowrap; }
 
-  /* Textarea */
-  textarea {
-    width: 100%;
-    min-height: 90px;
-    padding: 14px 16px;
-    border: 1.5px solid var(--mint);
-    border-radius: 12px;
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--soil);
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-    line-height: 1.6;
-  }
-  textarea:focus { border-color: var(--fern); }
-  textarea::placeholder { color: var(--blush); }
+/* ---- FEEDBACK ---- */
+.feedback-section {
+  background: white;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 36px;
+}
+.feedback-section h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  color: var(--forest);
+  margin-bottom: 6px;
+}
+.feedback-section p {
+  font-size: 13px;
+  color: var(--soft);
+  margin-bottom: 16px;
+  font-weight: 300;
+}
+.feedback-section textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  color: var(--dark);
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.feedback-section textarea:focus { border-color: var(--sage); }
+.feedback-section textarea::placeholder { color: #BBB; }
 
-  /* Select dropdown */
-  select {
-    width: 100%;
-    padding: 13px 16px;
-    border: 1.5px solid var(--mint);
-    border-radius: 12px;
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--soil);
-    outline: none;
-    appearance: none;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C7C3A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-  }
-  select:focus { border-color: var(--fern); }
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--fern);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(45,90,27,0.25);
+  letter-spacing: 0.3px;
+}
+.btn-submit:hover { background: var(--forest); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,90,27,0.3); }
 
-  /* Nav Buttons */
-  .nav {
-    display: flex;
-    gap: 14px;
-    margin-top: 36px;
-    justify-content: space-between;
-    align-items: center;
-  }
+/* ---- SUCCESS ---- */
+.success-msg {
+  display: none;
+  text-align: center;
+  padding: 28px;
+  background: var(--pale);
+  border: 1.5px solid var(--mint);
+  border-radius: 16px;
+  margin-top: 20px;
+}
+.success-msg .big-icon { font-size: 48px; margin-bottom: 12px; }
+.success-msg h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--forest); margin-bottom: 8px; }
+.success-msg p { font-size: 13px; color: var(--soft); font-weight: 300; }
 
-  .btn-back {
-    padding: 12px 24px;
-    border: 1.5px solid var(--mint);
-    background: transparent;
-    color: var(--bark);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-back:hover { border-color: var(--sage); color: var(--moss); }
+/* ---- PRINT ---- */
+.print-bar {
+  text-align: center;
+  margin-top: 32px;
+}
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--fern);
+  border: 1.5px solid var(--fern);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-print:hover { background: var(--pale); }
 
-  .btn-next {
-    padding: 14px 32px;
-    background: var(--fern);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(93,124,58,0.3);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-  }
-  .btn-next:hover { background: var(--moss); box-shadow: 0 6px 20px rgba(93,124,58,0.4); transform: translateY(-1px); }
+/* ---- ANIMATIONS ---- */
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+.meal-card { animation: fadeUp 0.4s ease both; }
+.meal-card:nth-child(1) { animation-delay: 0.05s; }
+.meal-card:nth-child(2) { animation-delay: 0.1s; }
+.meal-card:nth-child(3) { animation-delay: 0.15s; }
+.meal-card:nth-child(4) { animation-delay: 0.2s; }
+.meal-card:nth-child(5) { animation-delay: 0.25s; }
+.meal-card:nth-child(6) { animation-delay: 0.3s; }
+.meal-card:nth-child(7) { animation-delay: 0.35s; }
 
-  /* Results */
-  #results {
-    display: none;
-    animation: fadeSlideUp 0.6s ease both;
-  }
-
-  .result-header {
-    text-align: center;
-    background: var(--fern);
-    color: white;
-    border-radius: 20px 20px 0 0;
-    padding: 40px 36px 32px;
-  }
-
-  .result-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-  }
-
-  .result-header p {
-    font-size: 14px;
-    opacity: 0.85;
-    font-weight: 300;
-  }
-
-  .result-body {
-    background: white;
-    border-radius: 0 0 20px 20px;
-    border: 1px solid rgba(93,124,58,0.15);
-    border-top: none;
-    padding: 36px;
-  }
-
-  .result-section {
-    margin-bottom: 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--parchment);
-  }
-  .result-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-  .result-section h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: var(--soil);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .result-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .result-tag {
-    background: var(--cream);
-    border: 1px solid var(--mint);
-    color: var(--moss);
-    border-radius: 40px;
-    padding: 6px 14px;
-    font-size: 13px;
-  }
-
-  .result-text {
-    font-size: 14px;
-    color: var(--bark);
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  .result-score {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, var(--sage), var(--fern));
-    color: white;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-weight: 500;
-    font-size: 15px;
-  }
-
-  .btn-print {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    background: var(--soil);
-    color: var(--cream);
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 28px;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-  .btn-print:hover { background: var(--bark); }
-
-  .btn-restart {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    color: var(--fern);
-    border: 1.5px solid var(--fern);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: all 0.2s;
-  }
-  .btn-restart:hover { background: rgba(93,124,58,0.05); }
-
-  /* Animations */
-  @keyframes fadeSlideDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (max-width: 480px) {
-    .wrapper { padding: 32px 16px 60px; }
-    .section-card { padding: 24px; }
-    .scale-btn { width: 40px; height: 40px; font-size: 13px; }
-  }
+/* ---- PRINT STYLES ---- */
+@media print {
+  .hero { background: var(--forest) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .btn-approve, .btn-swap, .btn-print, .btn-submit, .ingredients-toggle, .feedback-section { display: none !important; }
+  .ingredients-list { display: block !important; }
+  .meal-card { break-inside: avoid; box-shadow: none !important; }
+  .approval-progress { display: none; }
+}
 </style>
 </head>
 <body>
 
-<div class="bg-leaf bg-leaf-1">🌿</div>
-<div class="bg-leaf bg-leaf-2">🍃</div>
-<div class="bg-leaf bg-leaf-3">🌱</div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🌿 Plant-Powered Meals · Week of March 23</div>
+  <h1>Your <em>Weekly</em><br>Breakfast & Lunch Menu</h1>
+  <p class="hero-sub">High fiber · High protein · No mushrooms or broccoli<br>Designed for gut health, weight loss & busy evenings</p>
+  <div class="hero-stats">
+    <span class="hero-pill">~1,400–1,500 cal/day</span>
+    <span class="hero-pill">25–30g fiber</span>
+    <span class="hero-pill">18–22 plant foods/day</span>
+    <span class="hero-pill">Under 15 min prep</span>
+  </div>
+</div>
 
-<div class="wrapper">
+<div class="container">
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-badge">🌱 Plant-Powered Meals</div>
-    <h1>Your Path to a <em>Diverse</em><br>Plant-Based Diet</h1>
-    <div class="divider">
-      <div class="divider-line"></div>
-      <div class="divider-icon">✦</div>
-      <div class="divider-line"></div>
-    </div>
-    <p class="subtitle">Answer a few questions so we can understand your starting point and help you build a colorful, nourishing plant-powered life.</p>
+  <!-- Instructions -->
+  <div class="instructions">
+    <strong>Here's how this works:</strong> Review each breakfast and lunch below. Click <strong>✓ Looks great!</strong> to approve a meal, or <strong>↻ Request a swap</strong> if you'd like something different — you can leave a note explaining what you'd prefer. When you're done, hit <strong>Submit Feedback</strong> at the bottom!
   </div>
 
   <!-- Progress -->
-  <div class="progress-wrap">
-    <div class="progress-label">
-      <span id="progress-text">Section 1 of 5</span>
-      <span id="progress-pct">0%</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-fill"></div>
+  <div class="approval-progress">
+    <span class="prog-label">Meals approved</span>
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill"></div></div>
+    <span class="prog-count" id="prog-count">0 / 14</span>
+  </div>
+
+  <!-- BREAKFASTS -->
+  <div class="section-header">
+    <div class="section-icon">🌅</div>
+    <div>
+      <div class="section-title">Breakfasts</div>
+      <div class="section-count">7 mornings · ~420–450 calories each</div>
     </div>
   </div>
 
-  <!-- SECTION 1: Current Eating Habits -->
-  <div class="section-card active" id="section-1">
-    <div class="section-number">Section 01 / 05</div>
-    <div class="section-title">🥗 Current Eating Habits</div>
-    <div class="section-desc">Let's understand where you're starting from — no judgment, just curiosity!</div>
+  <div class="meals-grid" id="breakfasts"></div>
 
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🍽️</span> How would you describe your current diet?</label>
-      <div class="chips" data-key="current_diet" data-multi="false">
-        <div class="chip" data-val="omnivore">Omnivore (eat everything)</div>
-        <div class="chip" data-val="flexitarian">Flexitarian</div>
-        <div class="chip" data-val="vegetarian">Vegetarian</div>
-        <div class="chip" data-val="vegan">Mostly Vegan</div>
-        <div class="chip" data-val="other">Other</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🥦</span> How many different vegetables do you eat in a typical week?</label>
-      <div class="chips" data-key="veg_variety" data-multi="false">
-        <div class="chip" data-val="1-3">1–3 types</div>
-        <div class="chip" data-val="4-7">4–7 types</div>
-        <div class="chip" data-val="8-12">8–12 types</div>
-        <div class="chip" data-val="12+">12+ types</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🌾</span> Which plant foods do you already eat regularly? (select all that apply)</label>
-      <div class="chips" data-key="current_plants" data-multi="true">
-        <div class="chip" data-val="beans">Beans & Lentils</div>
-        <div class="chip" data-val="tofu">Tofu / Tempeh</div>
-        <div class="chip" data-val="whole_grains">Whole Grains</div>
-        <div class="chip" data-val="nuts_seeds">Nuts & Seeds</div>
-        <div class="chip" data-val="leafy_greens">Leafy Greens</div>
-        <div class="chip" data-val="fruits">Fruits</div>
-        <div class="chip" data-val="root_veg">Root Vegetables</div>
-        <div class="chip" data-val="none">Not many yet</div>
-      </div>
-    </div>
-
-    <div class="nav">
-      <button class="btn-next" onclick="nextSection(1)">Next <span>→</span></button>
+  <!-- LUNCHES -->
+  <div class="section-header">
+    <div class="section-icon">☀️</div>
+    <div>
+      <div class="section-title">Lunches</div>
+      <div class="section-count">7 middays · ~510–545 calories each</div>
     </div>
   </div>
 
-  <!-- SECTION 2: Goals & Motivation -->
-  <div class="section-card" id="section-2">
-    <div class="section-number">Section 02 / 05</div>
-    <div class="section-title">🎯 Goals & Motivation</div>
-    <div class="section-desc">Understanding your "why" helps us tailor the journey to what matters most to you.</div>
+  <div class="meals-grid" id="lunches"></div>
 
-    <div class="question">
-      <label class="question-label"><span class="q-icon">💚</span> What's driving your interest in a more plant-diverse diet? (select all that apply)</label>
-      <div class="chips" data-key="motivation" data-multi="true">
-        <div class="chip" data-val="health">Better overall health</div>
-        <div class="chip" data-val="energy">More energy</div>
-        <div class="chip" data-val="weight">Weight management</div>
-        <div class="chip" data-val="gut">Gut health / digestion</div>
-        <div class="chip" data-val="environment">Environmental reasons</div>
-        <div class="chip" data-val="explore">Exploring new foods</div>
-        <div class="chip" data-val="protein">Better protein sources</div>
-        <div class="chip" data-val="longevity">Longevity & prevention</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">⏱️</span> How quickly are you hoping to shift your diet?</label>
-      <div class="chips" data-key="pace" data-multi="false">
-        <div class="chip" data-val="gradual">Slowly and gradually</div>
-        <div class="chip" data-val="moderate">Moderate pace (few weeks)</div>
-        <div class="chip" data-val="fast">Dive in quickly</div>
-        <div class="chip" data-val="unsure">Not sure yet</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">📈</span> How motivated do you feel right now? (1 = just curious, 10 = fully committed)</label>
-      <div class="scale" data-key="motivation_level" data-multi="false">
-        <button class="scale-btn" data-val="1">1</button>
-        <button class="scale-btn" data-val="2">2</button>
-        <button class="scale-btn" data-val="3">3</button>
-        <button class="scale-btn" data-val="4">4</button>
-        <button class="scale-btn" data-val="5">5</button>
-        <button class="scale-btn" data-val="6">6</button>
-        <button class="scale-btn" data-val="7">7</button>
-        <button class="scale-btn" data-val="8">8</button>
-        <button class="scale-btn" data-val="9">9</button>
-        <button class="scale-btn" data-val="10">10</button>
-      </div>
-      <div class="scale-labels"><span>Just curious</span><span>Fully committed</span></div>
-    </div>
-
-    <div class="nav">
-      <button class="btn-back" onclick="prevSection(2)">← Back</button>
-      <button class="btn-next" onclick="nextSection(2)">Next <span>→</span></button>
-    </div>
+  <!-- Feedback -->
+  <div class="feedback-section" id="feedback-section">
+    <h3>💬 Any Other Thoughts?</h3>
+    <p>Anything else you'd like to change, add, or let your dietitian know before the plan is finalized.</p>
+    <textarea id="general-feedback" placeholder="e.g. I'd love more smoothie options for breakfast, or I'm not sure about the tofu..."></textarea>
+    <button class="btn-submit" onclick="submitFeedback()">🌿 Submit My Feedback</button>
   </div>
 
-  <!-- SECTION 3: Barriers & Challenges -->
-  <div class="section-card" id="section-3">
-    <div class="section-number">Section 03 / 05</div>
-    <div class="section-title">🌧️ Barriers & Challenges</div>
-    <div class="section-desc">Let's get honest about what might get in the way — so we can plan around it.</div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🚧</span> What challenges do you anticipate? (select all that apply)</label>
-      <div class="chips" data-key="barriers" data-multi="true">
-        <div class="chip" data-val="time">Not enough time to cook</div>
-        <div class="chip" data-val="cost">Budget / cost concerns</div>
-        <div class="chip" data-val="taste">Worried I won't like it</div>
-        <div class="chip" data-val="family">Family / partner doesn't eat plants</div>
-        <div class="chip" data-val="knowledge">Don't know how to cook plants</div>
-        <div class="chip" data-val="protein_worry">Worried about getting enough protein</div>
-        <div class="chip" data-val="access">Limited access to fresh produce</div>
-        <div class="chip" data-val="social">Social situations & eating out</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🍳</span> How confident are you in the kitchen?</label>
-      <div class="chips" data-key="cooking_skill" data-multi="false">
-        <div class="chip" data-val="beginner">Beginner — I keep it simple</div>
-        <div class="chip" data-val="intermediate">Intermediate — I follow recipes</div>
-        <div class="chip" data-val="confident">Confident — I improvise often</div>
-        <div class="chip" data-val="love_cooking">I love cooking and experimenting</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🛒</span> How much time per week can you realistically dedicate to meal prep?</label>
-      <div class="chips" data-key="time_available" data-multi="false">
-        <div class="chip" data-val="under_1hr">Under 1 hour</div>
-        <div class="chip" data-val="1-2hrs">1–2 hours</div>
-        <div class="chip" data-val="3-4hrs">3–4 hours</div>
-        <div class="chip" data-val="5+hrs">5+ hours</div>
-      </div>
-    </div>
-
-    <div class="nav">
-      <button class="btn-back" onclick="prevSection(3)">← Back</button>
-      <button class="btn-next" onclick="nextSection(3)">Next <span>→</span></button>
-    </div>
+  <div class="success-msg" id="success-msg">
+    <div class="big-icon">🌱</div>
+    <h3>Feedback Received!</h3>
+    <p>Your dietitian will review your responses and finalize the plan.<br>Get ready to start your plant-powered journey!</p>
   </div>
 
-  <!-- SECTION 4: Food Preferences -->
-  <div class="section-card" id="section-4">
-    <div class="section-number">Section 04 / 05</div>
-    <div class="section-title">🌶️ Tastes & Preferences</div>
-    <div class="section-desc">The more we know about what you love, the more exciting we can make your meals.</div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🌍</span> Which cuisines do you enjoy or are curious about? (select all that apply)</label>
-      <div class="chips" data-key="cuisines" data-multi="true">
-        <div class="chip" data-val="mediterranean">Mediterranean</div>
-        <div class="chip" data-val="asian">Asian (Indian, Thai, Japanese)</div>
-        <div class="chip" data-val="mexican">Mexican / Latin American</div>
-        <div class="chip" data-val="middle_eastern">Middle Eastern</div>
-        <div class="chip" data-val="african">African</div>
-        <div class="chip" data-val="american">American comfort food</div>
-        <div class="chip" data-val="european">European</div>
-        <div class="chip" data-val="all">Open to everything!</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🌶️</span> What flavor profiles do you gravitate toward?</label>
-      <div class="chips" data-key="flavors" data-multi="true">
-        <div class="chip" data-val="savory">Savory & Umami</div>
-        <div class="chip" data-val="spicy">Bold & Spicy</div>
-        <div class="chip" data-val="sweet">Sweet & Fruity</div>
-        <div class="chip" data-val="earthy">Earthy & Herby</div>
-        <div class="chip" data-val="tangy">Tangy & Bright</div>
-        <div class="chip" data-val="creamy">Rich & Creamy</div>
-        <div class="chip" data-val="fresh">Light & Fresh</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🚫</span> Any foods you dislike or need to avoid?</label>
-      <textarea data-key="dislikes" placeholder="e.g. I hate mushrooms, I'm allergic to soy, I can't stand bitter greens..."></textarea>
-    </div>
-
-    <div class="nav">
-      <button class="btn-back" onclick="prevSection(4)">← Back</button>
-      <button class="btn-next" onclick="nextSection(4)">Next <span>→</span></button>
-    </div>
-  </div>
-
-  <!-- SECTION 5: Support & Vision -->
-  <div class="section-card" id="section-5">
-    <div class="section-number">Section 05 / 05</div>
-    <div class="section-title">🌟 Your Vision</div>
-    <div class="section-desc">Last section! Let's think big-picture about what success looks like for you.</div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🤝</span> What kind of support would help you most?</label>
-      <div class="chips" data-key="support" data-multi="true">
-        <div class="chip" data-val="meal_plans">Weekly meal plans</div>
-        <div class="chip" data-val="recipes">Easy recipes</div>
-        <div class="chip" data-val="shopping">Shopping lists</div>
-        <div class="chip" data-val="accountability">Accountability check-ins</div>
-        <div class="chip" data-val="education">Learning about nutrition</div>
-        <div class="chip" data-val="swaps">Simple food swaps</div>
-        <div class="chip" data-val="batch_cooking">Batch cooking tips</div>
-      </div>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">🎨</span> What does success look like for you in 3 months?</label>
-      <textarea data-key="success_vision" placeholder="Describe your ideal relationship with plant-based eating in a few months..."></textarea>
-    </div>
-
-    <div class="question">
-      <label class="question-label"><span class="q-icon">💬</span> Anything else you'd like your dietitian to know?</label>
-      <textarea data-key="extra_notes" placeholder="Anything goes! Health conditions, lifestyle notes, questions you have..."></textarea>
-    </div>
-
-    <div class="nav">
-      <button class="btn-back" onclick="prevSection(5)">← Back</button>
-      <button class="btn-next" onclick="submitForm()">See My Profile 🌿</button>
-    </div>
-  </div>
-
-  <!-- RESULTS -->
-  <div id="results">
-    <div class="result-header">
-      <div style="font-size:48px;margin-bottom:12px;">🌿</div>
-      <h2>Your Plant-Powered Profile</h2>
-      <p>Here's a summary of your journey starting point</p>
-    </div>
-    <div class="result-body" id="result-body">
-    </div>
+  <div class="print-bar">
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
   </div>
 
 </div>
 
 <script>
-  const answers = {};
-  const totalSections = 5;
+const meals = {
+  breakfasts: [
+    {
+      day: "Monday",
+      title: "Savory White Bean & Spinach Scramble",
+      desc: "A warm, protein-packed start — creamy beans meet fluffy eggs and wilted greens with roasted peppers and a hint of lemon and basil.",
+      cal: 420, protein: 22, fiber: 12, plants: 6, prep: "10 min",
+      ingredients: [
+        "2 large eggs", "½ cup cannellini beans (canned, drained)",
+        "1 cup baby spinach", "¼ cup roasted red peppers (jarred), sliced",
+        "6 fresh basil leaves", "1 tsp olive oil",
+        "1 clove garlic, minced", "Salt & black pepper to taste",
+        "1 slice whole grain sourdough bread", "Squeeze of fresh lemon"
+      ]
+    },
+    {
+      day: "Tuesday",
+      title: "Overnight Oats with Chia & Mango",
+      desc: "Creamy, no-cook oats loaded with tropical fruit and a nutty almond butter swirl. Prep the night before for a zero-effort morning.",
+      cal: 430, protein: 12, fiber: 11, plants: 6, prep: "3 min (night before)",
+      ingredients: [
+        "½ cup rolled oats", "¾ cup oat milk",
+        "1 tbsp chia seeds", "½ cup fresh or frozen mango, diced",
+        "¼ cup fresh raspberries", "1 tbsp almond butter",
+        "½ tsp cinnamon", "1 tsp maple syrup (optional)",
+        "Pinch of sea salt"
+      ]
+    },
+    {
+      day: "Wednesday",
+      title: "Mediterranean Avocado Toast",
+      desc: "Smashed avocado and white beans on crispy rye, piled with tomatoes and herbs. Filling, fresh, and ready in 8 minutes.",
+      cal: 410, protein: 14, fiber: 13, plants: 7, prep: "8 min",
+      ingredients: [
+        "2 slices whole grain rye bread, toasted", "½ ripe avocado",
+        "¼ cup white beans (cannellini), mashed", "½ cup cherry tomatoes, halved",
+        "Red pepper flakes to taste", "Zest of ½ lemon + squeeze of juice",
+        "1 tbsp fresh parsley or basil, chopped", "Flaky sea salt & black pepper",
+        "Drizzle of olive oil"
+      ]
+    },
+    {
+      day: "Thursday",
+      title: "Spicy Tofu Scramble Wrap",
+      desc: "Boldly spiced tofu with peppers and spinach in a warm tortilla — tastes like the best breakfast burrito, minus the meat.",
+      cal: 440, protein: 22, fiber: 10, plants: 7, prep: "12 min",
+      ingredients: [
+        "150g firm tofu, crumbled", "1 whole wheat tortilla (10-inch)",
+        "¼ tsp turmeric", "½ tsp cumin",
+        "1 jalapeño, finely diced", "½ roasted red pepper (jarred), sliced",
+        "1 cup baby spinach", "1 tsp olive oil",
+        "2 tbsp fresh salsa", "Salt & pepper to taste"
+      ]
+    },
+    {
+      day: "Friday",
+      title: "Berry Almond Smoothie Bowl",
+      desc: "Thick, spoonable smoothie topped with crunch and color — feels indulgent, tastes like dessert, fuels you for hours.",
+      cal: 420, protein: 13, fiber: 12, plants: 7, prep: "5 min",
+      ingredients: [
+        "1 cup frozen mixed berries", "½ frozen banana",
+        "½ cup oat milk", "1 tbsp almond butter",
+        "Toppings: 2 tbsp granola", "1 tsp chia seeds",
+        "1 tbsp sliced almonds", "½ cup fresh strawberries, sliced",
+        "Drizzle of honey or maple syrup (optional)"
+      ]
+    },
+    {
+      day: "Saturday",
+      title: "Almond Butter & Berry Yogurt Parfait",
+      desc: "Creamy layers of plant-based yogurt, crunchy granola, and fresh berries with a swirl of almond butter — feels like a treat, takes 5 minutes.",
+      cal: 445, protein: 15, fiber: 11, plants: 6, prep: "5 min",
+      ingredients: [
+        "¾ cup unsweetened coconut or almond yogurt", "¼ cup rolled oat granola",
+        "½ cup mixed fresh berries (blueberries, raspberries, strawberries)", "½ banana, sliced",
+        "1 tbsp almond butter", "1 tsp chia seeds",
+        "Drizzle of maple syrup (optional)", "Pinch of cinnamon"
+      ]
+    },
+    {
+      day: "Sunday",
+      title: "Full Mediterranean Breakfast Plate",
+      desc: "A leisurely weekend spread — no cooking required. Colorful, nourishing, and perfect for a slow Sunday morning.",
+      cal: 440, protein: 18, fiber: 11, plants: 8, prep: "5 min",
+      ingredients: [
+        "¼ cup hummus", "½ cucumber, sliced",
+        "¼ cup roasted red peppers (jarred), sliced", "8 kalamata olives",
+        "1 hard-boiled egg (batch boiled on Sunday prep day)", "2 whole grain pita triangles, toasted",
+        "Small handful mixed nuts (almonds, walnuts)", "Fresh mint leaves",
+        "Drizzle of olive oil & za'atar spice"
+      ]
+    }
+  ],
+  lunches: [
+    {
+      day: "Monday",
+      title: "Super Greek Quinoa Power Bowl",
+      desc: "The ultimate Mediterranean bowl — nutty quinoa, creamy chickpeas, crisp veggies, and a lemon-tahini dressing that ties it all together.",
+      cal: 520, protein: 18, fiber: 14, plants: 10, prep: "10 min",
+      ingredients: [
+        "¾ cup cooked quinoa", "½ cup chickpeas (canned, drained & rinsed)",
+        "½ cucumber, diced", "¼ cup roasted red peppers (jarred), sliced",
+        "8 kalamata olives, halved", "¼ red onion, thinly sliced",
+        "Large handful fresh parsley", "Lemon-tahini dressing:",
+        "1 tbsp tahini + juice of ½ lemon + 1 tsp olive oil + splash of water", "Salt & pepper"
+      ]
+    },
+    {
+      day: "Tuesday",
+      title: "Spicy Black Bean & Sweet Potato Burrito Bowl",
+      desc: "All the joy of a burrito without the wrap — smoky, spicy, creamy, and fresh all at once.",
+      cal: 540, protein: 16, fiber: 16, plants: 11, prep: "10 min",
+      ingredients: [
+        "½ cup cooked brown rice", "½ cup black beans (canned, drained)",
+        "½ cup roasted sweet potato cubes", "¼ cup shredded purple cabbage",
+        "¼ cup corn (frozen & thawed, or canned)", "3 tbsp fresh salsa",
+        "¼ avocado, sliced", "Chipotle tahini: 1 tbsp tahini + ½ tsp chipotle powder + squeeze lime",
+        "Fresh cilantro", "Lime wedge"
+      ]
+    },
+    {
+      day: "Wednesday",
+      title: "Creamy Tuscan White Bean Soup",
+      desc: "Silky, comforting soup that tastes like it simmered all day — ready in 15 minutes. The cashew cream finish makes it feel luxurious.",
+      cal: 510, protein: 17, fiber: 15, plants: 8, prep: "15 min",
+      ingredients: [
+        "1 can (400g) cannellini beans, drained", "½ cup sun-dried tomatoes (in oil), chopped",
+        "2 cups baby spinach", "3 cloves garlic, minced",
+        "1 sprig fresh rosemary (or ½ tsp dried)", "2 cups vegetable broth",
+        "2 tbsp raw cashews, blended with 3 tbsp water (cashew cream)", "1 tsp olive oil",
+        "Salt, pepper & chili flakes", "4–6 whole grain crackers"
+      ]
+    },
+    {
+      day: "Thursday",
+      title: "Big Italian Lentil & Roasted Veggie Bowl",
+      desc: "Hearty green lentils with roasted Mediterranean vegetables and a bright red wine vinegar dressing — like a warm Italian salad.",
+      cal: 530, protein: 19, fiber: 17, plants: 10, prep: "10 min",
+      ingredients: [
+        "¾ cup cooked French green lentils", "½ zucchini, roasted & sliced",
+        "½ cup cherry tomatoes, halved (roasted or fresh)", "¼ red onion, roasted",
+        "8 kalamata olives", "Large handful fresh basil",
+        "1 tbsp pine nuts", "Dressing: 1 tbsp olive oil + 1 tsp red wine vinegar + pinch oregano",
+        "Salt & pepper to taste"
+      ]
+    },
+    {
+      day: "Friday",
+      title: "Mexican Street Corn & Chickpea Salad",
+      desc: "Charred corn and roasted chickpeas with creamy lime dressing — bright, spicy, satisfying. Your new Friday obsession.",
+      cal: 520, protein: 15, fiber: 14, plants: 10, prep: "10 min",
+      ingredients: [
+        "½ cup corn (roasted or charred in a pan)", "½ cup chickpeas (roasted until crispy)",
+        "¼ red onion, finely diced", "1 jalapeño, finely diced",
+        "½ cup cherry tomatoes, halved", "¼ avocado, diced",
+        "Large handful cilantro", "Cashew cotija: 2 tbsp cashews blended fine with pinch salt",
+        "Dressing: 2 tbsp lime juice + 1 tbsp olive oil + ½ tsp chipotle powder", "Salt & pepper"
+      ]
+    },
+    {
+      day: "Saturday",
+      title: "Spicy Peanut Noodle Bowl",
+      desc: "Silky peanut sauce meets chewy noodles and crunchy fresh vegetables — bold, creamy, satisfying, and secretly packed with plants.",
+      cal: 545, protein: 20, fiber: 13, plants: 9, prep: "15 min",
+      ingredients: [
+        "90g whole wheat spaghetti, cooked", "½ cup shelled edamame",
+        "1 medium carrot, julienned or grated", "1 cup red cabbage, shredded",
+        "½ cucumber, julienned", "2 green onions, thinly sliced",
+        "1 tsp sesame seeds", "Peanut sauce: 2 tbsp peanut butter + 1 tsp soy sauce + 1 tsp grated ginger + 1 tsp sriracha + 1 tbsp lime juice + 2 tbsp warm water"
+      ]
+    },
+    {
+      day: "Sunday",
+      title: "Batch Cook Sunday Bowl",
+      desc: "Use everything you prepped this week to build the ultimate custom bowl. This is your reward for batch cooking — zero effort, maximum satisfaction.",
+      cal: 530, protein: 17, fiber: 15, plants: 10, prep: "5 min assembly",
+      ingredients: [
+        "¾ cup cooked quinoa or brown rice (from batch)", "½ cup beans of choice (from batch)",
+        "½ cup roasted vegetables (from batch)", "¼ avocado",
+        "Handful of fresh greens (arugula, spinach, or kale)", "Any fresh herbs on hand",
+        "Tahini drizzle: 1 tbsp tahini + squeeze lemon + splash water", "Lemon wedge",
+        "Salt, pepper & red pepper flakes"
+      ]
+    }
+  ]
+};
 
-  function updateProgress(section) {
-    const pct = Math.round(((section - 1) / totalSections) * 100);
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-pct').textContent = pct + '%';
-    document.getElementById('progress-text').textContent = `Section ${section} of ${totalSections}`;
-  }
+let approvals = {};
+let swapNotes = {};
+let totalMeals = 14;
 
-  // Chip clicks
-  document.querySelectorAll('.chips').forEach(group => {
-    const isMulti = group.dataset.multi === 'true';
-    group.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        if (!isMulti) group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.toggle('selected');
-        collectChipAnswer(group);
-      });
-    });
-  });
+function buildCards(data, containerId, prefix) {
+  const container = document.getElementById(containerId);
+  data.forEach((meal, i) => {
+    const id = `${prefix}-${i}`;
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.id = `card-${id}`;
 
-  // Scale clicks
-  document.querySelectorAll('.scale').forEach(group => {
-    group.querySelectorAll('.scale-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        group.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        answers[group.dataset.key] = btn.dataset.val;
-      });
-    });
-  });
+    const ingredientsList = meal.ingredients.map(ing => `<li>${ing}</li>`).join('');
 
-  // Textarea
-  document.querySelectorAll('textarea').forEach(ta => {
-    ta.addEventListener('input', () => { answers[ta.dataset.key] = ta.value; });
-  });
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-day">${meal.day}</div>
+        <div class="card-body">
+          <div class="card-title">${meal.title}</div>
+          <div class="card-desc">${meal.desc}</div>
 
-  // Select
-  document.querySelectorAll('select').forEach(sel => {
-    sel.addEventListener('change', () => { answers[sel.dataset.key] = sel.value; });
-  });
+          <button class="ingredients-toggle" onclick="toggleIngredients('${id}', this)">
+            <span>🧾 View Ingredients & Amounts</span>
+            <span class="toggle-arrow">▾</span>
+          </button>
+          <div class="ingredients-list" id="ing-${id}">
+            <ul>${ingredientsList}</ul>
+          </div>
 
-  function collectChipAnswer(group) {
-    const selected = [...group.querySelectorAll('.chip.selected')].map(c => c.dataset.val);
-    answers[group.dataset.key] = group.dataset.multi === 'true' ? selected : selected[0];
-  }
+          <div class="nutrition-strip">
+            <span class="nutr-pill cal">~${meal.cal} cal</span>
+            <span class="nutr-pill">🥩 ${meal.protein}g protein</span>
+            <span class="nutr-pill">🌾 ${meal.fiber}g fiber</span>
+            <span class="nutr-pill plants">🌿 ${meal.plants} plants</span>
+            <span class="nutr-pill">⏱ ${meal.prep}</span>
+          </div>
 
-  function nextSection(current) {
-    document.getElementById('section-' + current).classList.remove('active');
-    const next = current + 1;
-    document.getElementById('section-' + next).classList.add('active');
-    updateProgress(next);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function prevSection(current) {
-    document.getElementById('section-' + current).classList.remove('active');
-    const prev = current - 1;
-    document.getElementById('section-' + prev).classList.add('active');
-    updateProgress(prev);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function submitForm() {
-    document.getElementById('section-5').classList.remove('active');
-    document.getElementById('progress-fill').style.width = '100%';
-    document.getElementById('progress-pct').textContent = '100%';
-    document.getElementById('progress-text').textContent = 'Complete!';
-    buildResults();
-    document.getElementById('results').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function buildResults() {
-    const rb = document.getElementById('result-body');
-
-    const labels = {
-      current_diet: { omnivore:'Omnivore', flexitarian:'Flexitarian', vegetarian:'Vegetarian', vegan:'Mostly Vegan', other:'Other' },
-      veg_variety: { '1-3':'1–3 types/week', '4-7':'4–7 types/week', '8-12':'8–12 types/week', '12+':'12+ types/week' },
-      pace: { gradual:'Gradual transition', moderate:'Moderate pace', fast:'Dive in quickly', unsure:'Not sure yet' },
-      cooking_skill: { beginner:'Beginner cook', intermediate:'Intermediate cook', confident:'Confident cook', love_cooking:'Loves to cook' },
-      time_available: { 'under_1hr':'Under 1 hr/week', '1-2hrs':'1–2 hrs/week', '3-4hrs':'3–4 hrs/week', '5+hrs':'5+ hrs/week' },
-    };
-
-    const motivLevel = answers['motivation_level'] || '?';
-
-    const makeTagsHtml = (vals, map) => {
-      if (!vals) return '<span class="result-tag">Not answered</span>';
-      const arr = Array.isArray(vals) ? vals : [vals];
-      return arr.map(v => `<span class="result-tag">${map ? (map[v] || v) : v}</span>`).join('');
-    };
-
-    rb.innerHTML = `
-      <div class="result-section">
-        <h3>🌱 Starting Point</h3>
-        <div class="result-tags">
-          ${makeTagsHtml(answers['current_diet'], labels.current_diet)}
-          ${makeTagsHtml(answers['veg_variety'], labels.veg_variety)}
+          <div class="approval-row">
+            <span>Your verdict:</span>
+            <button class="btn-approve" id="approve-${id}" onclick="setApproval('${id}', 'approved')">✓ Looks great!</button>
+            <button class="btn-swap" id="swap-${id}" onclick="setApproval('${id}', 'swap')">↻ Request a swap</button>
+          </div>
+          <div class="swap-note" id="swap-note-${id}">
+            <textarea placeholder="What would you prefer instead? Any ingredients you'd like to change or avoid?" oninput="swapNotes['${id}'] = this.value"></textarea>
+          </div>
         </div>
-        ${answers['current_plants'] ? `<div style="margin-top:10px;" class="result-tags">${makeTagsHtml(answers['current_plants'], null)}</div>` : ''}
       </div>
-
-      <div class="result-section">
-        <h3>🎯 Motivation & Pace</h3>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span class="result-score">⚡ Motivation: ${motivLevel}/10</span>
-          <div class="result-tags">${makeTagsHtml(answers['pace'], labels.pace)}</div>
-        </div>
-        ${answers['motivation'] ? `<div style="margin-top:12px;" class="result-tags">${makeTagsHtml(answers['motivation'], null)}</div>` : ''}
-      </div>
-
-      <div class="result-section">
-        <h3>🚧 Challenges to Address</h3>
-        <div class="result-tags">
-          ${makeTagsHtml(answers['barriers'], null)}
-          ${makeTagsHtml(answers['cooking_skill'], labels.cooking_skill)}
-          ${makeTagsHtml(answers['time_available'], labels.time_available)}
-        </div>
-      </div>
-
-      <div class="result-section">
-        <h3>🌍 Food Loves</h3>
-        <div class="result-tags">
-          ${makeTagsHtml(answers['cuisines'], null)}
-        </div>
-        ${answers['flavors'] ? `<div style="margin-top:10px;" class="result-tags">${makeTagsHtml(answers['flavors'], null)}</div>` : ''}
-        ${answers['dislikes'] ? `<p class="result-text" style="margin-top:12px;"><strong>Avoid:</strong> ${answers['dislikes']}</p>` : ''}
-      </div>
-
-      <div class="result-section">
-        <h3>🤝 Support Needed</h3>
-        <div class="result-tags">${makeTagsHtml(answers['support'], null)}</div>
-      </div>
-
-      ${answers['success_vision'] ? `
-      <div class="result-section">
-        <h3>🌟 Your 3-Month Vision</h3>
-        <p class="result-text">"${answers['success_vision']}"</p>
-      </div>` : ''}
-
-      ${answers['extra_notes'] ? `
-      <div class="result-section">
-        <h3>💬 Additional Notes</h3>
-        <p class="result-text">${answers['extra_notes']}</p>
-      </div>` : ''}
-
-      <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
-      <button class="btn-restart" onclick="location.reload()">↩ Start Over</button>
     `;
+    container.appendChild(card);
+  });
+}
+
+function toggleIngredients(id, btn) {
+  const list = document.getElementById(`ing-${id}`);
+  list.classList.toggle('visible');
+  btn.classList.toggle('open');
+  btn.querySelector('span:first-child').textContent = list.classList.contains('visible') ? '🧾 Hide Ingredients' : '🧾 View Ingredients & Amounts';
+}
+
+function setApproval(id, status) {
+  const card = document.getElementById(`card-${id}`);
+  const approveBtn = document.getElementById(`approve-${id}`);
+  const swapBtn = document.getElementById(`swap-${id}`);
+  const swapNote = document.getElementById(`swap-note-${id}`);
+
+  // Toggle off if clicking same button
+  if (approvals[id] === status) {
+    approvals[id] = null;
+    card.classList.remove('approved', 'swap-requested');
+    approveBtn.classList.remove('active');
+    swapBtn.classList.remove('active');
+    swapNote.style.display = 'none';
+    updateProgress();
+    return;
   }
+
+  approvals[id] = status;
+  card.classList.remove('approved', 'swap-requested');
+  approveBtn.classList.remove('active');
+  swapBtn.classList.remove('active');
+
+  if (status === 'approved') {
+    card.classList.add('approved');
+    approveBtn.classList.add('active');
+    swapNote.style.display = 'none';
+  } else {
+    card.classList.add('swap-requested');
+    swapBtn.classList.add('active');
+    swapNote.style.display = 'block';
+  }
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const responded = Object.values(approvals).filter(v => v !== null).length;
+  const pct = Math.round((responded / totalMeals) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-count').textContent = `${responded} / ${totalMeals}`;
+}
+
+function submitFeedback() {
+  const generalFeedback = document.getElementById('general-feedback').value;
+
+  const allMeals = [
+    ...meals.breakfasts.map((m,i) => ({...m, id: `b-${i}`, type: 'Breakfast'})),
+    ...meals.lunches.map((m,i) => ({...m, id: `l-${i}`, type: 'Lunch'}))
+  ];
+
+  const approved = [], swaps = [], noResponse = [];
+  allMeals.forEach(m => {
+    const label = `${m.type} – ${m.day}: ${m.title}`;
+    if (approvals[m.id] === 'approved') approved.push(label);
+    else if (approvals[m.id] === 'swap') swaps.push({ label, note: swapNotes[m.id] || '' });
+    else noResponse.push(label);
+  });
+
+  // Build PDF using jsPDF
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+  const W = doc.internal.pageSize.getWidth();
+  const margin = 48;
+  const contentW = W - margin * 2;
+  let y = 0;
+
+  function checkPage(needed) {
+    if (y + needed > doc.internal.pageSize.getHeight() - 48) {
+      doc.addPage();
+      y = 48;
+    }
+  }
+
+  // Header band
+  doc.setFillColor(30, 58, 26);
+  doc.rect(0, 0, W, 90, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.text('🌿  Meal Approval Summary', margin, 38);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.setTextColor(184, 217, 160);
+  doc.text('Plant-Powered Weekly Menu · Week of March 23, 2026', margin, 58);
+  doc.setTextColor(150, 190, 130);
+  doc.setFontSize(10);
+  doc.text(`Submitted: ${new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}`, margin, 76);
+
+  y = 112;
+
+  // Stats row
+  const stats = [
+    { label: 'Approved', val: approved.length, color: [45, 90, 27] },
+    { label: 'Swap Requested', val: swaps.length, color: [192, 87, 42] },
+    { label: 'No Response', val: noResponse.length, color: [150, 150, 150] },
+    { label: 'Total Meals', val: 14, color: [30, 58, 26] },
+  ];
+  const boxW = contentW / 4 - 8;
+  stats.forEach((s, i) => {
+    const x = margin + i * (boxW + 10);
+    doc.setFillColor(s.color[0], s.color[1], s.color[2]);
+    doc.roundedRect(x, y, boxW, 52, 6, 6, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(22);
+    doc.text(String(s.val), x + boxW/2, y + 28, { align: 'center' });
+    doc.setFontSize(9);
+    doc.setFont('helvetica','normal');
+    doc.text(s.label, x + boxW/2, y + 44, { align: 'center' });
+  });
+
+  y += 72;
+
+  function sectionHead(icon, title, color) {
+    checkPage(40);
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.roundedRect(margin, y, contentW, 32, 5, 5, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.text(`${icon}  ${title}`, margin + 12, y + 21);
+    y += 42;
+  }
+
+  function mealRow(text, bgColor, textColor, indent) {
+    checkPage(28);
+    const lines = doc.splitTextToSize(text, contentW - indent - 20);
+    const rowH = Math.max(28, lines.length * 14 + 14);
+    doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+    doc.roundedRect(margin, y, contentW, rowH, 3, 3, 'F');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    doc.text(lines, margin + indent, y + 18);
+    y += rowH + 5;
+  }
+
+  function noteRow(text) {
+    if (!text) return;
+    checkPage(24);
+    const lines = doc.splitTextToSize(`Note: ${text}`, contentW - 48);
+    const rowH = lines.length * 13 + 12;
+    doc.setFillColor(255, 248, 246);
+    doc.roundedRect(margin + 16, y, contentW - 16, rowH, 3, 3, 'F');
+    doc.setDrawColor(192, 87, 42);
+    doc.setLineWidth(2);
+    doc.line(margin + 16, y, margin + 16, y + rowH);
+    doc.setLineWidth(0.5);
+    doc.setTextColor(150, 60, 30);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(9.5);
+    doc.text(lines, margin + 26, y + 14);
+    y += rowH + 5;
+  }
+
+  // Approved meals
+  if (approved.length > 0) {
+    sectionHead('✓', `Approved Meals (${approved.length})`, [45, 90, 27]);
+    approved.forEach(label => mealRow(`✓  ${label}`, [238, 247, 232], [30, 70, 20], 8));
+    y += 8;
+  }
+
+  // Swap requests
+  if (swaps.length > 0) {
+    sectionHead('↻', `Swap Requests (${swaps.length})`, [192, 87, 42]);
+    swaps.forEach(s => {
+      mealRow(`↻  ${s.label}`, [255, 245, 240], [140, 50, 20], 8);
+      if (s.note) noteRow(s.note);
+    });
+    y += 8;
+  }
+
+  // No response
+  if (noResponse.length > 0) {
+    sectionHead('–', `No Response (${noResponse.length})`, [160, 160, 160]);
+    noResponse.forEach(label => mealRow(`–  ${label}`, [248, 248, 248], [100, 100, 100], 8));
+    y += 8;
+  }
+
+  // General feedback
+  if (generalFeedback.trim()) {
+    checkPage(60);
+    sectionHead('💬', 'Additional Notes', [74, 100, 60]);
+    checkPage(40);
+    const lines = doc.splitTextToSize(generalFeedback, contentW - 24);
+    const boxH = lines.length * 14 + 20;
+    doc.setFillColor(244, 250, 240);
+    doc.roundedRect(margin, y, contentW, boxH, 4, 4, 'F');
+    doc.setTextColor(60, 80, 50);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    doc.text(lines, margin + 12, y + 16);
+    y += boxH + 12;
+  }
+
+  // mailto button area
+  checkPage(90);
+  y += 16;
+  doc.setFillColor(238, 247, 232);
+  doc.roundedRect(margin, y, contentW, 72, 8, 8, 'F');
+  doc.setDrawColor(74, 124, 47);
+  doc.setLineWidth(1);
+  doc.roundedRect(margin, y, contentW, 72, 8, 8, 'S');
+
+  doc.setTextColor(30, 58, 26);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('📧  Ready to send? Click the button below to email your feedback!', margin + 16, y + 22);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  doc.setTextColor(80, 100, 70);
+  doc.text('This will open your email app pre-addressed to your dietitian.', margin + 16, y + 38);
+
+  // Mailto button
+  const btnX = margin + 16;
+  const btnY = y + 48;
+  const btnW = 220;
+  const btnH = 26;
+  doc.setFillColor(45, 90, 27);
+  doc.roundedRect(btnX, btnY, btnW, btnH, 5, 5, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('✉️  Send to My Dietitian', btnX + btnW/2, btnY + 17, { align: 'center' });
+
+  // Add mailto link over the button
+  const subject = encodeURIComponent('My Meal Approval Feedback – Week of March 23');
+  const body = encodeURIComponent(
+    `Hi Brigette!\n\nPlease find my meal feedback attached.\n\nQuick summary:\n✓ Approved: ${approved.length} meals\n↻ Swap requests: ${swaps.length} meals\n\n${generalFeedback ? 'Additional notes: ' + generalFeedback : ''}\n\nTalk soon! 🌿`
+  );
+  doc.link(btnX, btnY, btnW, btnH, { url: `mailto:Brigettemonique@me.com?subject=${subject}&body=${body}` });
+
+  // Footer
+  const totalPages = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+    doc.setFontSize(8);
+    doc.setTextColor(180, 180, 180);
+    doc.setFont('helvetica', 'normal');
+    doc.text('🌿  Plant-Powered Meals · Personalized by your dietitian', margin, doc.internal.pageSize.getHeight() - 20);
+    doc.text(`Page ${p} of ${totalPages}`, W - margin, doc.internal.pageSize.getHeight() - 20, { align: 'right' });
+  }
+
+  // Open PDF in new tab so she can click the mailto button
+  const pdfBlob = doc.output('blob');
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  window.open(pdfUrl, '_blank');
+
+  // Also trigger download as backup
+  doc.save('meal-feedback-march23.pdf');
+
+  document.getElementById('feedback-section').style.display = 'none';
+  document.getElementById('success-msg').style.display = 'block';
+  document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Build everything
+buildCards(meals.breakfasts, 'breakfasts', 'b');
+buildCards(meals.lunches, 'lunches', 'l');
 </script>
 </body>
 </html>
